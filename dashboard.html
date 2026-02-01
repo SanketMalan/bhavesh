@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>
+      if (!localStorage.getItem("token") || !localStorage.getItem("isLoggedIn")) {
+        window.location.href = "login.html";
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LogiSir - Logistics Dashboard</title>
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="dashboard.css" />
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Razorpay -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="logo">
+          <i class="fa-solid fa-truck-fast"></i>
+          <span>LogiSir</span>
+        </div>
+        <nav class="nav-menu">
+          <ul>
+            <li class="active">
+              <a href="dashboard.html">
+                <i class="fa-solid fa-house"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+             <li>
+                <a href="orders.html">
+                  <i class="fa-solid fa-clipboard-list"></i>
+                  <span>Orders</span>
+                </a>
+              </li>
+              <li>
+                <a href="fleet.html">
+                  <i class="fa-solid fa-truck-moving"></i>
+                  <span>Fleet</span>
+                </a>
+              </li>
+              <li>
+                <a href="inventory.html">
+                  <i class="fa-solid fa-warehouse"></i>
+                  <span>Inventory</span>
+                </a>
+              </li>
+              <li>
+                <a href="income.html">
+                  <i class="fa-solid fa-sack-dollar"></i>
+                  <span>Order & Income</span>
+                </a>
+              </li>
+              <li>
+                <a href="reports.html">
+                  <i class="fa-solid fa-chart-pie"></i>
+                  <span>Reports</span>
+                </a>
+              </li>
+              <li>
+                <a href="invoices.html">
+                  <i class="fa-solid fa-file-invoice"></i>
+                  <span>Invoices</span>
+                </a>
+              </li>
+            <li>
+                <a href="create-shipment.html">
+                  <i class="fa-solid fa-plus-circle"></i>
+                  <span>Create Shipment</span>
+                </a>
+              </li>
+
+            <li>
+              <a href="analytics.html">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Analytics</span>
+              </a>
+            </li>
+            <li>
+              <a href="wallet.html">
+                <i class="fa-solid fa-wallet"></i>
+                <span>Wallet</span>
+              </a>
+            </li>
+            <li>
+              <a href="settings.html">
+                <i class="fa-solid fa-gear"></i>
+                <span>Settings</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <div class="logout-section">
+            <a href="#">
+              <i class="fa-solid fa-right-from-bracket"></i>
+              <span>Logout</span>
+            </a>
+          </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Header -->
+        <header class="top-bar">
+          <div class="toggle-btn" id="sidebar-toggle">
+            <i class="fa-solid fa-bars"></i>
+          </div>
+          <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Search shipment, order ID..." />
+          </div>
+          <div class="user-profile" onclick="window.location.href='settings.html'" style="cursor: pointer;" title="Go to Profile">
+            <div class="profile-info">
+              <img
+                src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff"
+                alt="User"
+              />
+              <div class="text">
+                <h4>Alex Morgan</h4>
+                <p>Admin</p>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+          <div class="section-header" style="justify-content: space-between; display:flex;">
+             <div>
+                  <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary);">Dashboard Overview</h2>
+                  <p style="color: var(--text-secondary); font-size: 0.9rem;">Real-time overview of your logistics operations.</p>
+             </div>
+             <div>
+                  <button class="btn-primary" onclick="window.location.href='create-shipment.html'">
+                     <i class="fa-solid fa-plus"></i> New Shipment
+                  </button>
+             </div>
+           </div>
+
+          <!-- Stats Grid -->
+          <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+               
+               <!-- KYC Status (Action Required Effect) -->
+               <div class="stat-card" style="border: 1px solid #fdba74; background: #fff7ed; grid-column: span 1;">
+                  <div class="icon-box" style="background: #fed7aa; color: #c2410c;">
+                    <i class="fa-solid fa-id-card"></i>
+                  </div>
+                  <div class="stat-info">
+                    <p style="color: #9a3412;">KYC Status</p>
+                    <h3 id="statKYC" style="color: #c2410c;">Pending</h3>
+                    <span class="trend neutral" style="color: #9a3412;"><i class="fa-solid fa-circle-exclamation"></i> Action</span>
+                  </div>
+               </div>
+
+               <div class="special-stat-card bg-gradient-blue">
+                   <div class="icon-box"><i class="fa-solid fa-box"></i></div>
+                   <div class="stat-info">
+                       <h3 id="statTotalShipments">0</h3>
+                       <p>Total Shipments</p>
+                   </div>
+               </div>
+               <div class="special-stat-card bg-gradient-orange">
+                   <div class="icon-box"><i class="fa-solid fa-clock"></i></div>
+                   <div class="stat-info">
+                       <h3 id="statPending">0</h3>
+                       <p>Pending</p>
+                   </div>
+               </div>
+                <div class="special-stat-card bg-gradient-green">
+                   <div class="icon-box"><i class="fa-solid fa-check-circle"></i></div>
+                   <div class="stat-info">
+                       <h3 id="statDelivered">0</h3>
+                       <p>Delivered</p>
+                   </div>
+               </div>
+               <div class="special-stat-card bg-gradient-red">
+                   <div class="icon-box"><i class="fa-solid fa-ban"></i></div>
+                   <div class="stat-info">
+                       <h3 id="statCancelled">0</h3>
+                       <p>Cancelled</p>
+                   </div>
+               </div>
+               <div class="special-stat-card bg-gradient-purple">
+                   <div class="icon-box"><i class="fa-solid fa-truck-fast"></i></div>
+                   <div class="stat-info">
+                       <h3 id="statInTransit">0</h3>
+                       <p>In Transit</p>
+                   </div>
+               </div>
+               <div class="special-stat-card bg-gradient-darkred">
+                   <div class="icon-box"><i class="fa-solid fa-rotate-left"></i></div>
+                   <div class="stat-info">
+                       <h3 id="statReturned">0</h3>
+                       <p>Returned</p>
+                   </div>
+               </div>
+                <div class="stat-card" style="background: white;">
+                   <div class="icon-box" style="background:#fef3c7; color:#d97706;"><i class="fa-solid fa-pause"></i></div>
+                   <div class="stat-info">
+                       <h3 id="statOnHold">0</h3>
+                       <p>On Hold</p>
+                   </div>
+               </div>
+               <div class="stat-card" style="background: white;">
+                   <div class="icon-box" style="background:#fee2e2; color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                   <div class="stat-info">
+                       <h3 id="statFailed">0</h3>
+                       <p>Failed</p>
+                   </div>
+               </div>
+          </div>
+
+          <!-- Charts Grid -->
+           <div class="charts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+              <div class="chart-container" style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid var(--border-color);">
+                  <div class="section-header">
+                      <h3>Shipment Statistics</h3>
+                      <select><option>This Week</option><option>Last Week</option></select>
+                  </div>
+                  <canvas id="shipmentStatsChart"></canvas>
+              </div>
+              <div class="chart-container" style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid var(--border-color);">
+                   <div class="section-header">
+                      <h3>Vehicle Status</h3>
+                  </div>
+                  <canvas id="vehicleStatusChart"></canvas>
+              </div>
+              <div class="chart-container" style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid var(--border-color);">
+                   <div class="section-header">
+                      <h3>Orders by City</h3>
+                  </div>
+                  <canvas id="ordersCityChart"></canvas>
+              </div>
+               <div class="chart-container" style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid var(--border-color);">
+                   <div class="section-header">
+                      <h3>Avg Delivery Time (Days)</h3>
+                  </div>
+                  <canvas id="avgDeliveryTimeChart"></canvas>
+              </div>
+           </div>
+
+           <!-- Tables Grid -->
+           <div style="display: flex; flex-direction: column; gap: 2rem;">
+               
+               <!-- Vehicle List -->
+               <div class="table-section">
+                   <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Vehicle List</h3>
+                    <div class="table-responsive">
+                      <table id="vehicleListTable">
+                        <thead>
+                          <tr>
+                            <th>ID</th>
+                            <th>Model</th>
+                            <th>Driver</th>
+                            <th>Status</th>
+                            <th>Fuel Level</th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                      </table>
+                    </div>
+               </div>
+           </div>
+
+        </div>
+      </main>
+    </div>
+    <script src="dashboard.js"></script>
+  </body>
+</html>
+
